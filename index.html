@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantara — Modelos de Linguagem de Nova Geração</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0b0b;
+  --s1:#111;
+  --s2:#161616;
+  --bd:#1f1f1f;
+  --bd2:#2a2a2a;
+  --t1:#f0ede8;
+  --t2:#888;
+  --t3:#3f3f3f;
+  --sans:'Syne',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --serif:'Lora',serif
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--serif);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* ─── NAV ──────────────────────────────────────────────────────── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:var(--bg);border-bottom:1px solid var(--bd)}
+.logo{font-family:var(--sans);font-weight:800;font-size:17px;letter-spacing:-.04em;color:var(--t1);text-decoration:none}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-family:var(--mono);font-size:11px;color:var(--t2);text-decoration:none;letter-spacing:.06em;text-transform:uppercase;transition:color .18s}
+.nav-links a:hover{color:var(--t1)}
+.btn-nav{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:8px 18px;background:var(--t1);color:var(--bg);text-decoration:none;border:none;transition:opacity .18s}
+.btn-nav:hover{opacity:.82}
+
+/* ─── HERO ─────────────────────────────────────────────────────── */
+/* Visual: Full-viewport near-black. CSS grid overlay fades to transparent at edges.
+   Left-aligned editorial layout. Syne 800 at ~100px. Three-line break headline.
+   Lora body in muted tone. Two CTAs — solid and ghost. Staggered load animation. */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 48px 100px;position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:72px 72px;pointer-events:none}
+#hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 70% at 20% 80%,transparent 20%,var(--bg) 80%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:1100px}
+.label{font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:.14em;text-transform:uppercase}
+.hero-label{margin-bottom:40px;opacity:0;animation:fadeUp .55s .15s forwards}
+h1{font-family:var(--sans);font-weight:800;font-size:clamp(52px,8.5vw,112px);letter-spacing:-.05em;line-height:.95;margin-bottom:36px;opacity:0;animation:fadeUp .65s .3s forwards}
+.hero-sub{font-family:var(--serif);font-size:clamp(15px,1.4vw,19px);color:var(--t2);line-height:1.75;max-width:500px;margin-bottom:52px;opacity:0;animation:fadeUp .65s .48s forwards}
+.ctas{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fadeUp .65s .62s forwards}
+.btn{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;padding:14px 28px;text-decoration:none;display:inline-block;transition:opacity .18s,border-color .18s,color .18s}
+.btn-solid{background:var(--t1);color:var(--bg);border:1px solid var(--t1)}
+.btn-solid:hover{opacity:.8}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--bd2)}
+.btn-ghost:hover{border-color:var(--t2);color:var(--t1)}
+
+/* ─── TRUST BAR ────────────────────────────────────────────────── */
+/* Visual: Slim horizontal strip. Mono labels. Thin vertical pipes.
+   No logos — numbers and text only. Blends into the page flow. */
+#trust{border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:22px 48px;display:flex;align-items:center;gap:0;overflow-x:auto;flex-wrap:nowrap}
+.trust-prefix{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;padding-right:40px;border-right:1px solid var(--bd);margin-right:40px;flex-shrink:0}
+.trust-items{display:flex;align-items:center;gap:0;flex-wrap:nowrap}
+.trust-item{display:flex;flex-direction:column;gap:3px;padding:0 36px;border-right:1px solid var(--bd);flex-shrink:0}
+.trust-item:last-child{border-right:none}
+.t-num{font-family:var(--sans);font-weight:700;font-size:18px;letter-spacing:-.03em;color:var(--t1)}
+.t-desc{font-family:var(--mono);font-size:9px;color:var(--t2);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+
+/* ─── SECTION COMMONS ───────────────────────────────────────────── */
+.wrap{max-width:1240px;margin:0 auto;padding:112px 48px}
+.sl{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.sl::before{content:'';width:22px;height:1px;background:var(--t3);flex-shrink:0}
+.sl span{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--sans);font-weight:800;font-size:clamp(30px,4.5vw,62px);letter-spacing:-.04em;line-height:1.05;margin-bottom:20px}
+.intro{font-family:var(--serif);font-size:17px;color:var(--t2);line-height:1.8;max-width:560px}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ─── PRODUCTS ──────────────────────────────────────────────────── */
+/* Visual: Section label + headline intro. Then two-column card pair.
+   LEFT card (1.0): dark surface, bordered, community styling.
+   RIGHT card (1.5 EVO): full white background with black text — hard inversion.
+   The contrast does the differentiation work without any other decoration. */
+#products{border-top:1px solid var(--bd)}
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);border:1px solid var(--bd);margin-top:64px}
+.pc{padding:52px 48px;display:flex;flex-direction:column;gap:22px}
+.pc.community{background:var(--s2)}
+.pc.flagship{background:var(--t1);color:var(--bg)}
+.ptag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border:1px solid currentColor;display:inline-block;width:fit-content;opacity:.55}
+.pc.flagship .ptag{opacity:1;border-color:var(--bg);color:var(--bg)}
+.pc h3{font-family:var(--sans);font-weight:800;font-size:clamp(30px,3.5vw,52px);letter-spacing:-.04em;line-height:1}
+.pc.community h3{color:var(--t1)}
+.pc.flagship h3{color:var(--bg)}
+.pc p{font-family:var(--serif);font-size:16px;line-height:1.7}
+.pc.community p{color:var(--t2)}
+.pc.flagship p{color:#555}
+.features{list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.features li{font-family:var(--mono);font-size:11px;letter-spacing:.03em;display:flex;gap:10px}
+.features li::before{content:'—';flex-shrink:0;opacity:.4}
+.pc.community .features li{color:var(--t2)}
+.pc.flagship .features li{color:#666}
+.pc-cta{margin-top:auto;padding-top:32px}
+.btn-inv{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;padding:13px 26px;text-decoration:none;display:inline-block;transition:opacity .18s;background:var(--bg);color:var(--t1);border:1px solid var(--bg)}
+.btn-inv:hover{opacity:.8}
+.btn-outline-dark{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;padding:13px 26px;text-decoration:none;display:inline-block;background:transparent;color:var(--t2);border:1px solid var(--bd2);transition:border-color .18s,color .18s}
+.btn-outline-dark:hover{border-color:var(--t2);color:var(--t1)}
+
+/* ─── ADVANTAGES ─────────────────────────────────────────────────── */
+/* Visual: Two-column grid. Oversized gray numerals (01/02) as silent anchors.
+   Bordered stat boxes inline. Pure typography — no icons, no illustrations. */
+#advantages{border-top:1px solid var(--bd)}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:72px}
+.adv-num{font-family:var(--sans);font-weight:800;font-size:72px;color:var(--bd2);letter-spacing:-.06em;line-height:1;margin-bottom:20px;user-select:none}
+.adv h3{font-family:var(--sans);font-weight:700;font-size:clamp(20px,2.4vw,34px);letter-spacing:-.03em;line-height:1.15;margin-bottom:18px}
+.adv p{font-family:var(--serif);font-size:16px;color:var(--t2);line-height:1.82;margin-bottom:14px}
+.stat-box{border:1px solid var(--bd2);padding:20px 24px;margin-top:20px;display:flex;flex-direction:column;gap:5px}
+.stat-big{font-family:var(--sans);font-weight:800;font-size:40px;letter-spacing:-.04em;color:var(--t1)}
+.stat-lbl{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:.1em;text-transform:uppercase}
+
+/* ─── USE CASES ──────────────────────────────────────────────────── */
+/* Visual: 2×2 bordered grid. Cards use the same surface bg.
+   Each card: mono category label → Syne title → Lora body → model badge.
+   Hover: barely perceptible bg shift. Functional, not decorative. */
+#usecases{border-top:1px solid var(--bd)}
+.cases-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);border:1px solid var(--bd);margin-top:60px}
+.cc{background:var(--s1);padding:44px 40px;transition:background .2s}
+.cc:hover{background:var(--s2)}
+.cc-cat{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
+.cc h4{font-family:var(--sans);font-weight:700;font-size:19px;letter-spacing:-.02em;margin-bottom:10px}
+.cc p{font-family:var(--serif);font-size:15px;color:var(--t2);line-height:1.72}
+.model-badge{display:inline-block;margin-top:20px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);padding:4px 9px;border:1px solid var(--bd)}
+
+/* ─── FINAL CTA ──────────────────────────────────────────────────── */
+/* Visual: Full-width white section — hard contrast inversion from the dark site.
+   Centered Syne 800 headline at max size. Lora subline in muted gray.
+   Two buttons: primary (black bg) and ghost. No other decoration. */
+#cta{background:var(--t1);padding:136px 48px;text-align:center}
+#cta .label{color:#999;margin-bottom:28px;display:block}
+#cta h2{color:var(--bg);font-size:clamp(38px,7vw,100px);margin-bottom:24px;max-width:900px;margin-left:auto;margin-right:auto}
+#cta p{font-family:var(--serif);font-size:18px;color:#666;line-height:1.7;max-width:480px;margin:0 auto 48px}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cta-row .btn-solid{background:var(--bg);color:var(--t1);border-color:var(--bg)}
+.cta-row .btn-ghost{color:#888;border-color:#ccc}
+.cta-row .btn-ghost:hover{color:var(--bg);border-color:var(--bg)}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────── */
+footer{border-top:1px solid var(--bd);padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.fl a{font-family:var(--mono);font-size:10px;color:var(--t3);text-decoration:none;letter-spacing:.05em;margin-left:24px;transition:color .18s}
+.fl a:hover{color:var(--t2)}
+.copy{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.05em}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+@media(max-width:900px){
+  nav{padding:16px 24px}
+  .nav-links{display:none}
+  #hero{padding:0 24px 80px}
+  #trust{padding:20px 24px}
+  .wrap{padding:80px 24px}
+  .product-grid{grid-template-columns:1fr;gap:1px}
+  .adv-grid{grid-template-columns:1fr;gap:48px}
+  .cases-grid{grid-template-columns:1fr}
+  #cta{padding:80px 24px}
+  footer{padding:24px;flex-direction:column;align-items:flex-start}
+  .fl{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+  .fl a{margin-left:0;margin-right:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Quantara</a>
+  <ul class="nav-links">
+    <li><a href="#products">Modelos</a></li>
+    <li><a href="#advantages">Diferenciais</a></li>
+    <li><a href="#usecases">Casos de Uso</a></li>
+    <li><a href="#">Documentação</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+  <a href="#" class="btn-nav">Gerar API Key</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+     Visual: Full-viewport dark. CSS grid lines fade outward.
+     Headline anchored to bottom-left. Staggered reveal on load.
+════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="label hero-label">Quantara — Modelos de Linguagem de Nova Geração</p>
+    <h1>A IA que<br>fala como<br>humano.</h1>
+    <p class="hero-sub">
+      Dois modelos. Uma missão: linguagem indistinguível, infraestrutura que escala.
+      Do código aberto ao deployment enterprise — sem concessões.
+    </p>
+    <div class="ctas">
+      <a href="#products" class="btn btn-solid">Explorar Abstral 1.5 EVO</a>
+      <a href="#" class="btn btn-ghost">Ver no GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TRUST BAR
+     Visual: Thin horizontal strip. Numbers in Syne bold.
+     Labels in IBM Plex Mono. Pipe separators. No logos needed.
+════════════════════════════════════════════════════════════ -->
+<div id="trust">
+  <span class="trust-prefix">Confiado por</span>
+  <div class="trust-items">
+    <div class="trust-item">
+      <span class="t-num">12.000+</span>
+      <span class="t-desc">Desenvolvedores</span>
+    </div>
+    <div class="trust-item">
+      <span class="t-num">99.97%</span>
+      <span class="t-desc">Uptime SLA</span>
+    </div>
+    <div class="trust-item">
+      <span class="t-num">Apache 2.0</span>
+      <span class="t-desc">Código auditável</span>
+    </div>
+    <div class="trust-item">
+      <span class="t-num">SOC 2</span>
+      <span class="t-desc">Segurança enterprise</span>
+    </div>
+    <div class="trust-item">
+      <span class="t-num">~3ms</span>
+      <span class="t-desc">Latência média</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PRODUCTS
+     Visual: Two cards. LEFT (1.0) = dark surface, ghost button.
+     RIGHT (1.5 EVO) = white background, black text — inverted.
+     The visual inversion signals premium without a single badge.
+════════════════════════════════════════════════════════════ -->
+<section id="products">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sl"><span>Modelos</span></div>
+      <h2>Dois modelos.<br>Propósitos distintos.</h2>
+      <p class="intro">
+        O Abstral 1.0 foi construído para a comunidade. O Abstral 1.5 EVO foi construído para quem não aceita compromisso entre naturalidade e custo de inferência.
+      </p>
+    </div>
+
+    <div class="product-grid reveal">
+
+      <!-- ── Abstral 1.0 ── Community -->
+      <div class="pc community">
+        <span class="ptag">Comunidade / Open Source</span>
+        <div>
+          <p style="font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Modelo</p>
+          <h3>Abstral 1.0</h3>
+        </div>
+        <p>
+          Livre para usar, modificar e redistribuir. O ponto de partida para desenvolvedores e pesquisadores que querem construir sobre uma base sólida — sem taxas, sem restrições.
+        </p>
+        <ul class="features">
+          <li>Download direto ou via HuggingFace</li>
+          <li>Licença Apache 2.0 — uso comercial permitido</li>
+          <li>Ideal para fine-tuning, pesquisa e prototipagem</li>
+          <li>Sem rate limits, sem billing</li>
+          <li>Documentação aberta, comunidade ativa no Discord</li>
+        </ul>
+        <div class="pc-cta">
+          <a href="#" class="btn btn-outline-dark">Baixar Abstral 1.0</a>
+        </div>
+      </div>
+
+      <!-- ── Abstral 1.5 EVO ── Flagship -->
+      <div class="pc flagship">
+        <span class="ptag">Flagship / Enterprise</span>
+        <div>
+          <p style="font-family:var(--mono);font-size:10px;color:#aaa;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Modelo</p>
+          <h3>Abstral 1.5 EVO</h3>
+        </div>
+        <p>
+          O modelo mais natural que existe. Respostas indistinguíveis de linguagem humana, produzidas com custo de inferência drasticamente inferior ao mercado.
+        </p>
+        <ul class="features">
+          <li>Linguagem conversacional de altíssima fidelidade</li>
+          <li>Custo por token até 8× menor que concorrentes</li>
+          <li>API REST com SLA enterprise e suporte dedicado</li>
+          <li>Streaming, batching e function calling incluídos</li>
+          <li>Escalabilidade horizontal nativa</li>
+        </ul>
+        <div class="pc-cta">
+          <a href="#" class="btn-inv">Obter Acesso à API</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CORE ADVANTAGES
+     Visual: Two-column. Oversized muted numerals as anchors.
+     Bordered stat boxes. No icons. Typography does all the work.
+════════════════════════════════════════════════════════════ -->
+<section id="advantages">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sl"><span>Diferenciais</span></div>
+      <h2>Por que o Abstral 1.5 EVO<br>é diferente.</h2>
+    </div>
+
+    <div class="adv-grid">
+
+      <div class="adv reveal">
+        <div class="adv-num">01</div>
+        <h3>Linguagem indistinguível<br>de um ser humano</h3>
+        <p>
+          A maioria dos modelos produz texto que <em>soa</em> como texto. O Abstral 1.5 EVO produz linguagem: ritmo natural de frase, variação sintática, coerência de tom ao longo de contextos extensos — calibrado para não revelar a máquina.
+        </p>
+        <p>
+          Em avaliações duplo-cego com usuários reais, respostas do Abstral 1.5 EVO foram classificadas como humanas em <strong style="color:var(--t1)">91% dos casos</strong>. Para aplicações de suporte, vendas e atendimento, isso não é diferencial — é o produto em si.
+        </p>
+        <div class="stat-box">
+          <span class="stat-big">91%</span>
+          <span class="stat-lbl">Taxa de classificação como humano em testes cegos</span>
+        </div>
+      </div>
+
+      <div class="adv reveal">
+        <div class="adv-num">02</div>
+        <h3>Custo de inferência<br>que muda a equação</h3>
+        <p>
+          Linguagem de alta qualidade não precisa custar caro. A arquitetura de inferência do Abstral 1.5 EVO foi projetada do zero para minimizar ciclos computacionais sem sacrificar fidelidade — resultando em custo por token até oito vezes abaixo dos principais concorrentes comparáveis.
+        </p>
+        <p>
+          Para empresas que processam milhões de requisições por mês, a diferença não é incremental — é estratégica. Mais volume. Mesma margem. Escala sem tradeoff.
+        </p>
+        <div class="stat-box">
+          <span class="stat-big">8×</span>
+          <span class="stat-lbl">Redução de custo por token vs. concorrentes comparáveis</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     USE CASES
+     Visual: 2×2 bordered grid. Hover = subtle bg shift.
+     Category in mono, title in Syne, body in Lora.
+     Small model badge at base of each card.
+════════════════════════════════════════════════════════════ -->
+<section id="usecases">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sl"><span>Casos de Uso</span></div>
+      <h2>Onde o Abstral<br>gera valor real.</h2>
+      <p class="intro">
+        Da automação de atendimento à geração de código — projetado para os fluxos que mais importam ao negócio.
+      </p>
+    </div>
+
+    <div class="cases-grid reveal">
+
+      <div class="cc">
+        <p class="cc-cat">Atendimento ao Cliente</p>
+        <h4>Suporte automatizado 24/7</h4>
+        <p>Agentes conversacionais que respondem como humanos — sem scripts engessados. Reduza filas, aumente CSAT e corte custos operacionais sem abrir mão da qualidade percebida.</p>
+        <span class="model-badge">Abstral 1.5 EVO</span>
+      </div>
+
+      <div class="cc">
+        <p class="cc-cat">Desenvolvimento de Software</p>
+        <h4>Assistente de codificação</h4>
+        <p>Autocompletar inteligente, geração de testes, refatoração contextual e documentação automática. Integre via API ou use os SDKs oficiais para qualquer linguagem.</p>
+        <span class="model-badge">Abstral 1.0 / 1.5 EVO</span>
+      </div>
+
+      <div class="cc">
+        <p class="cc-cat">Marketing e Conteúdo</p>
+        <h4>Produção de conteúdo em escala</h4>
+        <p>Artigos, copies, e-mails e posts com consistência de voz e tom. O Abstral 1.5 EVO mantém identidade de marca ao longo de milhares de gerações — sem deriva estilística.</p>
+        <span class="model-badge">Abstral 1.5 EVO</span>
+      </div>
+
+      <div class="cc">
+        <p class="cc-cat">Inteligência de Dados</p>
+        <h4>Análise e síntese de documentos</h4>
+        <p>Processe contratos, relatórios e bases de conhecimento. Extraia insights, classifique documentos e gere resumos executivos com precisão e contexto preservado.</p>
+        <span class="model-badge">Abstral 1.5 EVO</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FINAL CTA
+     Visual: Hard white inversion — maximum contrast against dark site.
+     Centered Syne 800 at near-maximum size. No decorative elements.
+     The starkness creates urgency better than any animation.
+════════════════════════════════════════════════════════════ -->
+<section id="cta">
+  <span class="label reveal">Comece agora</span>
+  <h2 class="reveal">Construa com<br>o melhor modelo.</h2>
+  <p class="reveal">
+    Abstral 1.0 disponível agora, gratuitamente. API do Abstral 1.5 EVO mediante cadastro — sem custo de setup, sem compromisso de volume mínimo.
+  </p>
+  <div class="cta-row reveal">
+    <a href="#" class="btn btn-solid">Gerar Chave de API</a>
+    <a href="#" class="btn btn-ghost">Explorar no GitHub →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo">Quantara</a>
+  <div class="fl">
+    <a href="#">Documentação</a>
+    <a href="#">Preços</a>
+    <a href="#">Status</a>
+    <a href="#">Privacidade</a>
+    <a href="#">Contato</a>
+  </div>
+  <p class="copy">© 2025 Quantara. Todos os direitos reservados.</p>
+</footer>
+
+<script>
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, _, arr) => {
+    if (!e.isIntersecting) return;
+    const siblings = [...e.target.parentElement.querySelectorAll('.reveal')];
+    const i = siblings.indexOf(e.target);
+    e.target.style.transitionDelay = `${i * 75}ms`;
+    e.target.classList.add('in');
+    io.unobserve(e.target);
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -48px 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
